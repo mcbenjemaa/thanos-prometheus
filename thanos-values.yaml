@@ -1,0 +1,106 @@
+# Default values for prometheus-thanos.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  querier:
+    type: ClusterIP
+    http:
+      port: 9090
+    grpc:
+      port: 10901
+    annotations: {}
+  storeGateway:
+    type: ClusterIP
+    http:
+      port: 9090
+    grpc:
+      port: 10901
+    annotations: {}
+  ruler:
+    type: ClusterIP
+    http:
+      port: 9090
+    grpc:
+      port: 10901
+    annotations: {}
+  bucketWebInterface:
+    type: ClusterIP
+    http:
+      port: 9090
+    annotations: {}
+
+querier:
+  enabled: true
+  stores:
+    - prometheus-server:10901
+    - prometheus-thanos-store-gateway:10901
+
+storeGateway:
+  enabled: true
+  extraEnv: []
+  # - name: GOOGLE_APPLICATION_CREDENTIALS
+  #   value: /etc/gcp/secrets/credentials.json
+  logLevel: debug
+  # IndexCache configuraiton. See https://thanos.io/components/store.md/#index-cache for available options
+
+  objStoreType: ""
+  objStoreConfig: {}
+  ## GCS example
+  #  bucket: demo-bucket
+
+  ## S3 example
+  #  bucket: demo-bucket
+  #  access_key: smth
+  #  secret_key: Need8Chars
+  #  endpoint: a
+  #  insecure: true
+  objStoreConfigFile: /config/storage/.storage_config
+  volumes:
+    - name: config-file
+      secret:
+        secretName: prometheus.storage.config
+  volumeMounts:
+    - mountPath: /config/storage
+      name: config-file
+  podNumericalPriorityEnabled: false
+  podPriority: 0
+  podPriorityClassName: ""
+
+compact:
+  enabled: true
+  extraEnv: []
+  # - name: GOOGLE_APPLICATION_CREDENTIALS
+  #   value: /etc/gcp/secrets/credentials.json
+  objStoreType: null
+  objStoreConfig: {}
+  ## GCS example
+  #  bucket: demo-bucket
+
+  ## S3 example
+  #  bucket: demo-bucket
+  #  access_key: smth
+  #  secret_key: Need8Chars
+  #  endpoint: a
+  #  insecure: true
+  objStoreConfigFile: /config/storage/.storage_config
+  volumes:
+    - name: config-file
+      secret:
+        secretName: prometheus.storage.config
+  volumeMounts:
+    - mountPath: /config/storage
+      name: config-file
+  podNumericalPriorityEnabled: false
+  podPriority: 0
+  podPriorityClassName: ""
+
+
+ruler:
+  enabled: true
+
+bucketWebInterface:
+  enabled: false

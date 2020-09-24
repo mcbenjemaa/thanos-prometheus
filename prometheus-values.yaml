@@ -1,0 +1,49 @@
+sealedSecrets:
+  prometheus.storage.config:
+    .storage_config: AgA0nu5BH19nguI0Nu9KTockJ1fmX6mshmxW5aafDnakfxV3YksISiVZzL8yFu5Bf+csuMJUvco11+8ieuVN4Bjvwmmdo/awGASSrPa6GK4T6FuNcfZtUKHUDfnk0i1E1tY3GoKYZrUImzsncaNOLi8oKSXctUwV2cIHuuaIqmgByS6D15d+vMZZb5xo/HdfBC6BzFSbkJwEx5TLoWoahGUZUly+BsnuofkBaBohlIUDenmdLEuybI4gKx6NIEwOTwSPnBz8j1CyAQDFclPEJTcwv6vCH0sYemJwXlxL92WiCe7mxCLEnEWdnjTsYyjGNTbP5hQ3IiHjm0+gbVpWMq4AGVxUKQopuZPlYQSr+/EZQ8c7eLJHSn0XsMz4w4NjGhqRViXAHdLlT09AkX/VKOmAzldW3ghiH7/G2KnOugr+t9eWeitjA4r3XozY12kkev3+zrHafPtoOwTzt2rq9KHQrJreilLoBnatSjVRWC4lgjTKFDtvTlM1wq7v+YCvOOa0/6EImXrrKAcAmGB2YjrIpj/Hf4+RDDglMWjpj3591T9VvqIFAXQ8NQFLq2FgW/masDqjGPogxKhTRCwpl5YkHqOeGAeS+QqESKPDVNskfCxMsHhRGJZfOiYWce+sI7dOnedB0y1BkhEq1oVdtloqP8vEmfJax8XxmoZfqzZKNohLX3JFopGRV1tuu+1wuSSjhoQJnorokupPI8VRQ73RsdNdOZHK/h7r2Hb2M02vYlHAB40FFtmQRO21dM0i4dG3XhV2JDdDenkAdU5ZRbzcxnlCqLp4R6GR5RbCMasnxsWYTySyGObS9WjY9oms1OMEX3jDNse95Sio/uR+K9kNqVxXu93BHuPcFvaBmODfVr8XkVe8dSr4xnydjx9LyJdeY3aFuHCoLAKrIFYgupuCTaG/vcXPPEy8hv+bLBvbdL6MX4bsFgZAqlXZnWfUyIri5brS9LDKVnkGtchKTOGtYqJN9HKGthoXTtc2rt6eKzkC0w==
+
+server:
+  extraFlags:
+    - web.enable-admin-api
+    - storage.tsdb.min-block-duration=2h
+    - storage.tsdb.max-block-duration=2h
+  global:
+    external_labels:
+      cluster: dev
+      replica: 0
+    scrape_interval: 30s
+    scrape_timeout: 30s
+    evaluation_interval: 1m
+  service:
+    gRPC:
+      enabled: true
+      servicePort: 10901
+  retention: 30d
+  extraVolumes:
+    - name: storage-config-volume
+      secret:
+        secretName: prometheus.storage.config
+  thanosSidecar:
+    enabled: true
+    resources:
+      limits:
+        cpu: 200m
+        memory: 200Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+
+
+kubeStateMetrics:
+  enabled: true
+
+
+nodeExporter:
+  enabled: true
+
+
+rbac:
+  create: true
+
+initChownData:
+  enabled: true
